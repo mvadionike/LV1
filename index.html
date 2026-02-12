@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Моя Валентинка 💖</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Times New Roman", serif;
+    background: url("fon1.jpg") no-repeat center center fixed;
+    background-size: cover;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Плавный переход */
+.page {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transition: opacity 0.8s ease;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.container {
+    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.85);
+    margin: 60px auto;
+    padding: 25px;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 25px;
+    box-shadow: 0 0 30px rgba(255,20,147,0.6);
+}
+
+h1 {
+    color: #ff1493;
+}
+
+.question {
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.buttons {
+    margin-top: 30px;
+    position: relative;
+    height: 100px;
+}
+
+button {
+    padding: 14px 28px;
+    font-size: 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#yesBtn {
+    background: linear-gradient(45deg, #1e90ff, #00bfff);
+    color: white;
+}
+
+#yesBtn:hover {
+    transform: scale(1.15);
+}
+
+#noBtn {
+    background: linear-gradient(45deg, #ff4d6d, #ff1493);
+    color: white;
+    position: absolute;
+}
+
+.success {
+    font-size: 28px;
+    color: #ff1493;
+    font-weight: bold;
+}
+
+.photos img {
+    width: 130px;
+    margin: 10px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(255,20,147,0.6);
+}
+
+/* Летающие сердца */
+.heart {
+    position: fixed;
+    bottom: -40px;
+    width: 25px;
+    animation: floatUp linear forwards;
+}
+
+@keyframes floatUp {
+    to {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Конфетти */
+.confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: red;
+    animation: confettiFall 3s linear forwards;
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Секрет */
+.secret {
+    margin-top: 15px;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<audio id="music" src="music.mp3" loop></audio>
+
+<!-- Главная -->
+<div class="page" id="mainPage">
+<div class="container">
+    <img src="serd.png" width="70">
+    <h1>Моя Богиня</h1>
+    <img src="serd.png" width="70">
+
+    <div>
+        <img src="serd1.png" width="130">
+    </div>
+
+    <div class="question">
+        Будешь моей Валентинкой?
+    </div>
+
+    <div class="buttons">
+        <button id="yesBtn">Да!</button>
+        <button id="noBtn">Нет</button>
+    </div>
+
+    <div class="secret">
+        💌 Введи секретный код:
+        <input type="text" id="codeInput" maxlength="4">
+    </div>
+</div>
+</div>
+
+<!-- Неверный -->
+<div class="page hidden" id="wrongPage">
+<div class="container">
+    <h1 style="color:red;">ОТВЕТ НЕВЕРНЫЙ 😈</h1>
+    <img src="serd.png" width="120"><br><br>
+    <button onclick="goBack()">Назад</button>
+</div>
+</div>
+
+<!-- Успех -->
+<div class="page hidden" id="successPage">
+<div class="container">
+    <div class="success">УРАА! Я ТАК СЧАСТЛИВ 💖</div><br>
+    <img src="serd.png" width="120">
+    <div class="photos">
+        <img src="foto1.jpg">
+        <img src="foto2.jpg">
+    </div>
+</div>
+</div>
+
+<script>
+const music = document.getElementById("music");
+document.body.addEventListener("click", () => music.play(), {once:true});
+
+/* Летающие сердца */
+function createHeart() {
+    const heart = document.createElement("img");
+    heart.src = "serd.png";
+    heart.classList.add("heart");
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (4 + Math.random()*3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),7000);
+}
+setInterval(createHeart,700);
+
+/* Убегающая кнопка */
+let moveCount = 0;
+const noBtn = document.getElementById("noBtn");
+
+function moveButton(){
+    if(moveCount < 4){
+        noBtn.style.left = Math.random()*250 + "px";
+        noBtn.style.top = Math.random()*60 + "px";
+        moveCount++;
+    }
+}
+noBtn.addEventListener("mouseover",moveButton);
+noBtn.addEventListener("touchstart",moveButton);
+
+noBtn.addEventListener("click",()=>{
+    if(moveCount>=4){
+        switchPage("mainPage","wrongPage");
+    }
+});
+
+/* Да = взрыв + конфетти */
+document.getElementById("yesBtn").addEventListener("click",()=>{
+    explodeHeart();
+    createConfetti();
+    setTimeout(()=>{
+        switchPage("mainPage","successPage");
+    },800);
+});
+
+/* Переход */
+function switchPage(from,to){
+    document.getElementById(from).classList.add("hidden");
+    document.getElementById(to).classList.remove("hidden");
+}
+
+/* Назад */
+function goBack(){
+    switchPage("wrongPage","mainPage");
+}
+
+/* Взрыв сердца */
+function explodeHeart(){
+    for(let i=0;i<15;i++){
+        const heart=document.createElement("img");
+        heart.src="serd.png";
+        heart.style.position="fixed";
+        heart.style.left="50%";
+        heart.style.top="50%";
+        heart.style.width="30px";
+        heart.style.transition="1s";
+        document.body.appendChild(heart);
+        setTimeout(()=>{
+            heart.style.transform=`translate(${Math.random()*400-200}px,${Math.random()*400-200}px) scale(2)`;
+            heart.style.opacity=0;
+        },50);
+        setTimeout(()=>heart.remove(),1000);
+    }
+}
+
+/* Конфетти */
+function createConfetti(){
+    for(let i=0;i<80;i++){
+        const conf=document.createElement("div");
+        conf.classList.add("confetti");
+        conf.style.left=Math.random()*100+"vw";
+        conf.style.background=`hsl(${Math.random()*360},100%,50%)`;
+        document.body.appendChild(conf);
+        setTimeout(()=>conf.remove(),3000);
+    }
+}
+
+/* Секретный код */
+document.getElementById("codeInput").addEventListener("input",function(){
+    if(this.value==="1402"){
+        alert("💘 Секрет активирован! Ты моя навсегда 💘");
+        createConfetti();
+    }
+});
+</script>
+
+</body>
+</html>
